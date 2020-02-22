@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+
+  PostgreSQL:
+    restart: always
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - /srv/docker/postgresql:/var/lib/postgresql
+
+  Adminer:
+    restart: always
+    image: adminer
+    ports:
+      - "8080:8080"
