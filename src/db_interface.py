@@ -1,3 +1,6 @@
+import logging
+from logging.config import fileConfig as logFileConfig
+
 from epc.server import EPCServer
 
 from sqlalchemy import create_engine
@@ -5,13 +8,22 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.schema import MetaData
 
+from defaults import (
+    localhost,
+    config_file,
+)
 
-server = EPCServer(('localhost', 0))
+
+server = EPCServer((localhost, 0))
 
 DBSession = None
 Engine = None
 
-#@server.register_function
+logFileConfig(config_file)
+logger = logging.getLogger(__name__)
+
+
+@server.register_function
 def init_connection(database_string=None):
     init_engine(database_string)
     init_session()
@@ -40,13 +52,19 @@ def init_session():
         print(e)
 
 
-#@server.register_function
+@server.register_function
+def echo():
+    return 'aoeaoe12'
+
+
+@server.register_function
 def get_tables():
     meta = MetaData()
     meta.reflect(bind=Engine)
     return sorted(meta.tables)
 
 
+@server.register_function
 def get_columns_by_table(table):
     meta = MetaData()
     meta.reflect(bind=Engine)
@@ -54,5 +72,6 @@ def get_columns_by_table(table):
     return [(c.name, c.type) for c in table.columns]
 
 
-#server.print_port()
-#server.serve_forever()
+if __name__ == '__main__':
+    logger.info('test log')
+    logger.error('aoe')
